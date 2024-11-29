@@ -3,15 +3,13 @@ import _ from 'lodash';
 import Card from './card';
 import axios from 'axios';
 
-
-
 export default class MainContainer extends Component {
-  constructor(){
+  constructor() {
     super();
     this.state = {
-      coins:[],
-    }
-    this.url = 'https://thingproxy.freeboard.io/fetch/https://api.coinone.co.kr/ticker?currency=all'
+      coins: [],
+    };
+    this.url = 'https://thingproxy.freeboard.io/fetch/https://api.coinone.co.kr/ticker?currency=all';
     this.headers = {
       'content-type': 'application/json',
       'accept': 'application/json',
@@ -22,43 +20,43 @@ export default class MainContainer extends Component {
       timeout: 5000,
     };
   }
-  currencies = {};
 
-  getData(){
-    axios.get(this.url,this.options)
-    .then(result => {
-      
-      let data = result.data;
-      let coins = [];
-      Object.keys(data).map((k,i) => {
-        if(data[k].last){
-          coins.push(data[k]);
-        }
+  getData = () => {
+    axios
+      .get(this.url, this.options)
+      .then((result) => {
+        const data = result.data;
+        const coins = [];
+
+        // Use forEach instead of map for side-effects
+        Object.keys(data).forEach((k) => {
+          if (data[k].last) {
+            coins.push(data[k]);
+          }
+        });
+
+        this.setState({ coins });
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error.message);
       });
-      this.setState({coins:coins});
-    });
-  }
-  timer() {
-    this.getData();
-  }
+  };
+
   componentDidMount() {
-    this.intervalId = setInterval(this.timer.bind(this), 2000);
-    this.getData();
-  }
-  componentWillUnmount(){
-    clearInterval(this.intervalId);
+    this.intervalId = setInterval(this.getData, 2000); // Timer to fetch data every 2 seconds
+    this.getData(); // Initial fetch
   }
 
-  renderCoinCard(){
-
-    return _.map(this.state.coins, coin => {
-
-      return(
-        <Card key={coin.currency} coin={coin} />
-      )
-    });
-
+  componentWillUnmount() {
+    clearInterval(this.intervalId); // Clear interval on component unmount
   }
+
+  renderCoinCard = () => {
+    return _.map(this.state.coins, (coin) => (
+      <Card key={coin.currency} coin={coin} />
+    ));
+  };
+
   render() {
     return (
       <div className="container">
@@ -70,7 +68,11 @@ export default class MainContainer extends Component {
           </div>
         </div>
         <div className="row">
-          {this.state.coins.length > 0 && this.renderCoinCard()}
+          {this.state.coins.length > 0 ? (
+            this.renderCoinCard()
+          ) : (
+            <p>Loading cryptocurrency data...</p>
+          )}
         </div>
       </div>
     );
