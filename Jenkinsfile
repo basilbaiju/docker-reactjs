@@ -5,8 +5,12 @@ pipeline {
         DOCKER_IMAGE = "react-app" 
         SONARQUBE_URL = 'http://35.200.183.104:9000'
         SONARCUBE_TOKEN = credentials('sonarqube')
-        NEXUS_REPO_URL = '15.207.102.181:8083/repository/react-app/' 
+
+        NEXUS_REPO_URL = '34.47.180.214:8083/repository/react-app/'
         NEXUS_CREDENTIALS_ID = 'nexuscred' 
+
+        DOCKER_REPO = 'basilbaiju/react-app'
+        DOCKER_CREDENTIALS = 'dockercred'
     }
 
     tools {
@@ -42,6 +46,10 @@ pipeline {
                     // Tag the Docker image Nexus with build number and latest
                     sh 'docker tag $DOCKER_IMAGE $NEXUS_REPO_URL$DOCKER_IMAGE:$BUILD_NUMBER'
                     sh 'docker tag $DOCKER_IMAGE $NEXUS_REPO_URL$DOCKER_IMAGE:latest'
+
+                    // Tag the Docker image with build number and latest
+                    sh 'docker tag $DOCKER_IMAGE $DOCKER_REPO:$BUILD_NUMBER'
+                    sh 'docker tag $DOCKER_IMAGE $DOCKER_REPO:latest'
                 }
             }
         }
@@ -55,7 +63,7 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image to Nexus') {
+        stage('Publish Docker Image to Nexus') {
             steps {
                 script {
                     withCredentials([usernamePassword(
@@ -71,15 +79,29 @@ pipeline {
 
                         // Push the Docker image with the build number tag
                         sh 'docker push $NEXUS_REPO_URL$DOCKER_IMAGE:$BUILD_NUMBER'
-                        sh 'docker push $NEXUS_REPO_URL$DOCKER_IMAGE:latest'
+                        sh 'docker push $NEXUS_REPO_URL$DOCKER_IMAGE:latest'  
                     }
                 }
             }
         }
 
-        stage('Push Docker Image to dockerhub') {
+        stage('Publish Docker Image to dockerhub') {
             steps {
                 script {
+                    withCredentials([usernamePassword(
+                        credentialsId: "$DOCKER_CREDENTIALS", 
+                        usernameVariable: 'DOCKER_USERNAME', 
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )]) {
+                        // Login to Dockerhub
+                        sh '''
+                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                        '''
+
+                        // Push the Docker image with the build number tag
+                        sh 'docker push $DOCKER_REPO:$BUILD_NUMBER'
+                        sh 'docker push $DOCKER_REPO:latest'
+                    }
 
                 }
             }
