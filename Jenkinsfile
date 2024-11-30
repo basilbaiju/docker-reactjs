@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    sh 'docker build -it $DOCKER_IMAGE .'
+                    sh 'docker build -t $DOCKER_IMAGE .'
                     
                     // Tag the Docker image
                     sh 'docker tag $DOCKER_IMAGE $DOCKER_IMAGE:latest'
