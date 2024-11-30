@@ -23,6 +23,23 @@ pipeline {
                 git branch: 'master', url: 'https://github.com/basilbaiju/docker-reactjs.git'
             }
         }
+        
+        stage('Installing Dependencies') {
+            steps {
+                script {
+                    sh 'npm install'
+                }
+            }
+        }
+        
+        stage('Run Tests') {
+            steps {
+                script {
+                    sh 'CI=true npm test'
+                }
+            }
+        } 
+    
 
         stage('Sonarqube scanning') {
             steps {
@@ -63,7 +80,7 @@ pipeline {
             }
         }
 
-        stage('Publish Docker Image to Nexus') {
+        stage('Push Docker Image to Nexus') {
             steps {
                 script {
                     withCredentials([usernamePassword(
@@ -85,7 +102,7 @@ pipeline {
             }
         }
 
-        stage('Publish Docker Image to dockerhub') {
+        stage('Push Docker Image to dockerhub') {
             steps {
                 script {
                     withCredentials([usernamePassword(
@@ -105,7 +122,8 @@ pipeline {
 
                 }
             }
-        }    
+        }
+        
     }
 
     post {
