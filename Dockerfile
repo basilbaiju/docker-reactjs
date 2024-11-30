@@ -1,4 +1,4 @@
-FROM node:16 as builder
+FROM node:16 AS builder
 WORKDIR /usr/src/app
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY package.json /usr/src/app/package.json
