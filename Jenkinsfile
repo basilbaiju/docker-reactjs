@@ -23,8 +23,8 @@ pipeline {
                     sh 'docker build -t $DOCKER_IMAGE .'
 
                     // Tag the Docker image with build number and latest
-                    sh 'docker tag $DOCKER_IMAGE $DOCKER_REPO:$BUILD_NUMBER'
-                    sh 'docker tag $DOCKER_IMAGE $DOCKER_REPO:latest'
+                    sh 'docker tag $DOCKER_IMAGE $DOCKER_IMAGE:$BUILD_NUMBER'
+                    sh 'docker tag $DOCKER_IMAGE $DOCKER_IMAGE:latest'
                 }
             }
         }
