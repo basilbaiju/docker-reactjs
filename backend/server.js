@@ -1,23 +1,26 @@
 const session = require('express-session');
-const RedisStore = require('connect-redis').default; // Use .default for newer versions
-
+const RedisStore = require('connect-redis').default; // Use .default for newer versions of connect-redis
 const redis = require('redis');
+const express = require('express');
+const app = express();
+
+// Create Redis client with async connection
 const redisClient = redis.createClient({
-  host: 'redis', // Docker service name
-  port: 6379,
+  host: 'redis', // Docker service name or host address of Redis
+  port: 6379,    // Redis port
 });
 
 redisClient.on('error', (err) => {
   console.error('Redis error:', err);
 });
 
+// Async connection to Redis
+redisClient.connect().catch(console.error);
+
 // Use RedisStore with express-session
 const store = new RedisStore({
   client: redisClient,
 });
-
-const express = require('express');
-const app = express();
 
 app.use(
   session({
