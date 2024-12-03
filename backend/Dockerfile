@@ -1,19 +1,19 @@
 # Use official Node.js image as the base image
 FROM node:16
 
-# Set working directory inside container
+# Set working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy the backend package.json to the working directory
-COPY backend/package.json /usr/src/app/
+# Copy the backend package.json and package-lock.json files
+COPY backend/package.json backend/package-lock.json /usr/src/app/
 
-# Install dependencies using npm install
-RUN npm install
+# Install dependencies (add connect-redis and redis)
+RUN npm install connect-redis redis
 
 # Copy the rest of the backend code
 COPY backend/ /usr/src/app/
 
-# Expose the backend port (5000)
+# Expose the backend port
 EXPOSE 5000
 
 # Start the backend server
