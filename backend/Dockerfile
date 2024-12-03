@@ -5,7 +5,7 @@ FROM node:16
 WORKDIR /usr/src/app
 
 # Copy the backend package.json and package-lock.json files
-COPY backend/package.json backend/package-lock.json /usr/src/app/
+COPY backend/package.json /usr/src/app/
 
 # Install dependencies (add connect-redis and redis)
 RUN npm install connect-redis redis
