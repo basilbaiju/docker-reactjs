@@ -1,3 +1,5 @@
+version: '3'
+
 services:
   react-app:
     build: .
@@ -5,3 +7,20 @@ services:
       - "80:80"
     container_name: react-app
 
+  backend:
+    build:
+      context: ./backend  # Path to the backend directory
+    ports:
+      - "5000:5000"  # Expose backend on port 5000
+    container_name: backend
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis  # Ensure Redis starts before the backend
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"  # Expose Redis on port 6379
