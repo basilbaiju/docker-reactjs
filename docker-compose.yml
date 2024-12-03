@@ -1,18 +1,22 @@
-version: "3.9"
-
 services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    container_name: react-redis
   backend:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    volumes:
-      - ./backend:/usr/src/app
     ports:
       - "5000:5000"
-
+    depends_on:
+      - redis
   frontend:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "3000:80"
+    depends_on:
+      - backend
