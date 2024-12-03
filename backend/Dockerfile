@@ -4,11 +4,11 @@ FROM node:16
 # Set working directory inside container
 WORKDIR /usr/src/app
 
-# Copy the backend package.json and package-lock.json (if exists) to the working directory
-COPY backend/package.json backend/package-lock.json* /usr/src/app/
+# Copy the backend package.json to the working directory
+COPY backend/package.json /usr/src/app/
 
-# Install dependencies using npm ci for clean install (if package-lock.json exists)
-RUN npm ci
+# Install dependencies using npm install
+RUN npm install
 
 # Copy the rest of the backend code
 COPY backend/ /usr/src/app/
